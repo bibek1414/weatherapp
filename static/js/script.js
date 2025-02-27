@@ -1,6 +1,34 @@
-
+console.log("Hello");
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Sunrise and Sunset Formatter
+    const formatTime = (timestamp) => {
+        const date = new Date(timestamp * 1000);
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        
+        return `${hours}:${minutes} ${ampm}`;
+    };
+    
+    // Format sunrise and sunset times
+    const sunriseElement = document.getElementById('sunrise-time');
+    const sunsetElement = document.getElementById('sunset-time');
+    
+    if (sunriseElement && sunsetElement) {
+        const sunriseTimestamp = parseInt(sunriseElement.textContent);
+        const sunsetTimestamp = parseInt(sunsetElement.textContent);
+        
+        if (!isNaN(sunriseTimestamp) && !isNaN(sunsetTimestamp)) {
+            sunriseElement.textContent = formatTime(sunriseTimestamp);
+            sunsetElement.textContent = formatTime(sunsetTimestamp);
+        }
+    }
+
     // Geolocation search
     const geolocateBtn = document.getElementById('geolocate-btn');
     

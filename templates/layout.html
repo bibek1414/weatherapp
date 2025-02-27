@@ -1,180 +1,91 @@
 {% load static %}
-{% load static %}
+{% load tailwind_tags %}
 
-{% block title %}Weather for {{ weather.city }}{% endblock %}
-
-{% block content %}
-{% if weather %}
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <!-- ... (existing content) ... -->
-    
-    <!-- Search Again -->
-    <div class="p-8">
-        <form action="{% url 'search_weather' %}" method="post" class="space-y-4" id="search-form">
-            {% csrf_token %}
-            <h3 class="text-xl font-semibold mb-2">Search Another Location</h3>
-            <div class="flex flex-wrap md:flex-nowrap gap-2">
-                <input 
-                    type="text" 
-                    id="query" 
-                    name="query" 
-                    value="{{ query }}"
-                    class="flex-grow px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-weather-primary"
-                    required
-                >
-                <div class="flex gap-2 w-full md:w-auto">
-                    <button type="submit" class="flex-grow md:flex-grow-0 bg-weather-primary hover:bg-weather-secondary text-white px-6 py-3 rounded-md transition duration-200">
-                        <i class="fas fa-search mr-2"></i>
-                        Search
-                    </button>
-                    <button 
-                        type="button" 
-                        id="geolocate-btn"
-                        class="flex-grow md:flex-grow-0 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-md transition duration-200"
-                    >
-                        <i class="fas fa-map-marker-alt mr-2"></i>
-                        Use My Location
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-    
-    <!-- Additional Weather Details -->
-    <div class="border-t p-8 bg-gray-50">
-        <h3 class="text-xl font-semibold mb-4">Additional Details</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Sunrise/Sunset -->
-            <div class="bg-white p-4 rounded-lg shadow-sm">
-                <h4 class="font-medium text-gray-700 mb-3">Sun Schedule</h4>
-                <div class="flex justify-between items-center">
-                    <div class="text-center">
-                        <i class="fas fa-sunrise text-yellow-500 text-2xl mb-2"></i>
-                        <p class="text-sm text-gray-500">Sunrise</p>
-                        <p class="text-lg font-medium" id="sunrise-time">{{ weather.sunrise }}</p>
-                    </div>
-                    <div class="border-t border-gray-300 flex-grow mx-4"></div>
-                    <div class="text-center">
-                        <i class="fas fa-sunset text-orange-500 text-2xl mb-2"></i>
-                        <p class="text-sm text-gray-500">Sunset</p>
-                        <p class="text-lg font-medium" id="sunset-time">{{ weather.sunset }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Coordinates -->
-            <div class="bg-white p-4 rounded-lg shadow-sm">
-                <h4 class="font-medium text-gray-700 mb-3">Location</h4>
-                <div class="space-y-2">
-                    <p>
-                        <span class="text-gray-500">Latitude:</span> 
-                        <span class="font-medium">{{ weather.coordinates.lat }}</span>
-                    </p>
-                    <p>
-                        <span class="text-gray-500">Longitude:</span> 
-                        <span class="font-medium">{{ weather.coordinates.lon }}</span>
-                    </p>
-                    <a 
-                        href="https://www.google.com/maps/search/?api=1&query={{ weather.coordinates.lat }},{{ weather.coordinates.lon }}" 
-                        target="_blank"
-                        class="inline-block mt-2 text-weather-primary hover:text-weather-secondary"
-                    >
-                        <i class="fas fa-map-marked-alt mr-1"></i> View on Google Maps
-                    </a>
-                </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Weather App{% endblock %}</title>
+    {% tailwind_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <a href="{% url 'index' %}" class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-cloud-sun mr-2"></i>
+                    Weather App
+                </a>
+                <nav>
+                    <ul class="flex space-x-4">
+                        <li><a href="{% url 'index' %}" class="hover:text-gray-300">Home</a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
-    </div>
-    
-    <!-- Nearby Cities Section -->
-    <div class="border-t p-8">
-        <h3 class="text-xl font-semibold mb-4">Suggested Locations</h3>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button 
-                data-query="London"
-                class="search-history-item bg-gray-100 hover:bg-gray-200 p-4 rounded-lg text-center transition-colors duration-200"
-            >
-                <i class="fas fa-city text-weather-primary text-xl mb-2"></i>
-                <p class="font-medium">London</p>
-            </button>
-            <button 
-                data-query="New York"
-                class="search-history-item bg-gray-100 hover:bg-gray-200 p-4 rounded-lg text-center transition-colors duration-200"
-            >
-                <i class="fas fa-city text-weather-primary text-xl mb-2"></i>
-                <p class="font-medium">New York</p>
-            </button>
-            <button 
-                data-query="Tokyo"
-                class="search-history-item bg-gray-100 hover:bg-gray-200 p-4 rounded-lg text-center transition-colors duration-200"
-            >
-                <i class="fas fa-city text-weather-primary text-xl mb-2"></i>
-                <p class="font-medium">Tokyo</p>
-            </button>
-            <button 
-                data-query="Sydney"
-                class="search-history-item bg-gray-100 hover:bg-gray-200 p-4 rounded-lg text-center transition-colors duration-200"
-            >
-                <i class="fas fa-city text-weather-primary text-xl mb-2"></i>
-                <p class="font-medium">Sydney</p>
-            </button>
-        </div>
-    </div>
-</div>
+    </header>
 
-<!-- Weather Forecast Modal -->
-<div id="forecast-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
-        <div class="p-6 border-b flex justify-between items-center">
-            <h3 class="text-xl font-bold">5-Day Forecast for {{ weather.city }}</h3>
-            <button id="close-forecast-modal" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="mb-8">
+            {% for message in messages %}
+            <div class="p-4 {% if message.tags == 'error' %}bg-red-100 text-red-700 border-red-200{% else %}bg-blue-100 text-blue-700 border-blue-200{% endif %} border rounded-md mb-2">
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
-        <div id="forecast-content" class="p-6">
-            <p class="text-center text-gray-600">
-                <i class="fas fa-spinner fa-spin mr-2"></i>
-                Loading forecast data...
-            </p>
-        </div>
-    </div>
-</div>
-{% endif %}
-{% endblock %}
+        {% endif %}
 
-{% block scripts %}
-<script>
-    // Format sunrise and sunset times
-    document.addEventListener('DOMContentLoaded', function() {
-        // Convert Unix timestamps to readable time
-        const formatTime = (timestamp) => {
-            const date = new Date(timestamp * 1000);
-            let hours = date.getHours();
-            let minutes = date.getMinutes();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            
-            return `${hours}:${minutes} ${ampm}`;
-        };
-        
-        // Format sunrise and sunset times
-        const sunriseElement = document.getElementById('sunrise-time');
-        const sunsetElement = document.getElementById('sunset-time');
-        
-        if (sunriseElement && sunsetElement) {
-            const sunriseTimestamp = parseInt(sunriseElement.textContent);
-            const sunsetTimestamp = parseInt(sunsetElement.textContent);
-            
-            if (!isNaN(sunriseTimestamp) && !isNaN(sunsetTimestamp)) {
-                sunriseElement.textContent = formatTime(sunriseTimestamp);
-                sunsetElement.textContent = formatTime(sunsetTimestamp);
-            }
-        }
-    });
-</script>
-{% endblock %}
+        <!-- Content -->
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Sidebar -->
+            <div class="w-full md:w-1/4">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-lg font-semibold mb-4">Recent Searches</h2>
+                    {% if search_history %}
+                    <ul class="space-y-2">
+                        {% for search in search_history %}
+                        <li>
+                            <a href="{% url 'weather_results' search.search_type search.query %}" class="text-blue-600 hover:underline flex items-center">
+                                {% if search.search_type == 'city' %}
+                                <i class="fas fa-city mr-2"></i>
+                                {% elif search.search_type == 'zip' %}
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                {% else %}
+                                <i class="fas fa-globe mr-2"></i>
+                                {% endif %}
+                                {{ search.query }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-gray-500">No recent searches</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="w-full md:w-3/4">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4">
+            <p class="text-center">&copy; {% now "Y" %} Weather App. All rights reserved.</p>
+        </div>
+    </footer>
+
+    {% block scripts %}
+    {% endblock %}
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

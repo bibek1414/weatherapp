@@ -40,14 +40,11 @@ module.exports = {
          * and make sure the pattern below matches your project structure.
          */
         // '../../**/*.py'
-        '../weather_app/templates/**/*.html',
+        
     ],
     theme: {
         extend: {
-            colors: {
-                'weather-primary': '#00668A',
-                'weather-secondary': '#004E71',
-              },
+            
         },
     },
     plugins: [
