@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'weather_app.middleware.WeatherErrorMiddleware',
 ]
 
 ROOT_URLCONF = 'weather_project.urls'
