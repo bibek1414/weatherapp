@@ -1,0 +1,174 @@
+{% extends 'layout.html' %}
+
+{% block title %}Weather for {{ weather.city }}{% endblock %}
+
+{% block content %}
+{% if weather %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <!-- Header with city info -->
+    <div class="bg-gradient-to-r from-weather-primary to-weather-secondary text-white p-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">{{ weather.city }}, {{ weather.country }}</h1>
+                <p class="text-lg opacity-90">
+                    <i class="fas fa-map-marker-alt mr-2"></i>
+                    Lat: {{ weather.coordinates.lat }}, Lon: {{ weather.coordinates.lon }}
+                </p>
+            </div>
+            <div class="text-center">
+                <img 
+                    src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" 
+                    alt="{{ weather.description }}" 
+                    class="w-24 h-24 mx-auto"
+                >
+                <p class="text-xl">{{ weather.description }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current Temperature -->
+    <div class="p-8 border-b">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <button 
+    id="show-forecast-btn"
+    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200 flex items-center"
+    data-lat="{{ weather.coordinates.lat }}"
+    data-lon="{{ weather.coordinates.lon }}"
+>
+    <i class="fas fa-calendar-alt mr-2"></i>
+    5-Day Forecast
+</button>
+            <div class="text-center md:text-left mb-4 md:mb-0">
+                <span class="text-7xl font-bold text-gray-800">{{ weather.temperature }}°C</span>
+                <p class="text-gray-600 mt-2">Feels like: {{ weather.feels_like }}°C</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-x-12 gap-y-4">
+                <div class="flex items-center">
+                    <i class="fas fa-tint text-blue-500 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Humidity</p>
+                        <p class="text-xl">{{ weather.humidity }}%</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-wind text-teal-500 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Wind Speed</p>
+                        <p class="text-xl">{{ weather.wind_speed }} m/s</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-compress-alt text-purple-500 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Pressure</p>
+                        <p class="text-xl">{{ weather.pressure }} hPa</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-sun text-yellow-500 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">UV Index</p>
+                        <p class="text-xl">{{ weather.uv_index|default:"N/A" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Again -->
+    <div class="p-8">
+        <form action="{% url 'search_weather' %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            <h3 class="text-xl font-semibold mb-2">Search Another Location</h3>
+            <div class="flex">
+                <input 
+                    type="text" 
+                    id="query" 
+                    name="query" 
+                    value="{{ query }}"
+                    class="flex-grow px-4 py-3 rounded-l-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-weather-primary"
+                    required
+                >
+                <button type="submit" class="bg-weather-primary hover:bg-weather-secondary text-white px-6 py-3 rounded-r-md transition duration-200">
+                    <i class="fas fa-search mr-2"></i>
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Forecast modal functionality
+    const forecastModal = document.getElementById('forecast-modal');
+    const showForecastBtn = document.getElementById('show-forecast-btn');
+    const closeForecastModal = document.getElementById('close-forecast-modal');
+    const forecastContent = document.getElementById('forecast-content');
+    
+    if (showForecastBtn && forecastModal && closeForecastModal) {
+        // Show forecast modal and fetch data
+        showForecastBtn.addEventListener('click', function() {
+            forecastModal.classList.remove('hidden');
+            
+            const lat = this.dataset.lat;
+            const lon = this.dataset.lon;
+            
+            // Fetch forecast data
+            fetch(`/api/forecast/?lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        forecastContent.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+                        return;
+                    }
+                    
+                    // Render forecast data
+                    let html = '<div class="grid grid-cols-1 md:grid-cols-5 gap-4">';
+                    
+                    data.forecast.forEach(day => {
+                        html += `
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <h4 class="font-bold text-lg">${day.day_name}</h4>
+                                <p class="text-sm text-gray-600">${day.date}</p>
+                                <img 
+                                    src="http://openweathermap.org/img/wn/${day.icon}@2x.png" 
+                                    alt="${day.description}" 
+                                    class="w-16 h-16 mx-auto"
+                                >
+                                <p class="font-bold text-2xl">${day.temp}°C</p>
+                                <p class="capitalize">${day.description}</p>
+                                <div class="mt-2 flex justify-around text-sm">
+                                    <span><i class="fas fa-tint text-blue-500"></i> ${day.humidity}%</span>
+                                    <span><i class="fas fa-wind text-teal-500"></i> ${day.wind_speed} m/s</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    forecastContent.innerHTML = html;
+                })
+                .catch(error => {
+                    forecastContent.innerHTML = `<p class="text-red-500">Error loading forecast: ${error.message}</p>`;
+                });
+        });
+        
+        // Close forecast modal
+        closeForecastModal.addEventListener('click', function() {
+            forecastModal.classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        forecastModal.addEventListener('click', function(e) {
+            if (e.target === forecastModal) {
+                forecastModal.classList.add('hidden');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
