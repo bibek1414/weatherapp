@@ -6,6 +6,29 @@ from .models import SearchHistory
 from .weather_service import WeatherService
 from django.http import JsonResponse
 
+def city_suggestions(request):
+    """API endpoint to get city suggestions based on partial input"""
+    query = request.GET.get('q', '').strip()
+    
+    if len(query) < 2:
+        return JsonResponse({'suggestions': []})
+    matching_cities = SearchHistory.objects.filter(
+        query__icontains=query, 
+        search_type='city'
+    ).values_list('query', flat=True).distinct()[:5]
+    
+    # Add some popular cities if we don't have enough matches
+    popular_cities = ['London', 'New York', 'Tokyo', 'Paris', 'Sydney', 'Berlin', 
+                      'Moscow', 'Beijing', 'Cairo', 'Rio de Janeiro']
+    
+    suggestions = list(matching_cities)
+    
+    for city in popular_cities:
+        if query.lower() in city.lower() and city not in suggestions and len(suggestions) < 5:
+            suggestions.append(city)
+    
+    return JsonResponse({'suggestions': suggestions})
+
 def get_forecast(request):
     """API endpoint to get forecast data"""
     lat = request.GET.get('lat')

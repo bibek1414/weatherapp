@@ -1,5 +1,3 @@
-console.log("Hello");
-
 document.addEventListener('DOMContentLoaded', function() {
     // Sunrise and Sunset Formatter
     const formatTime = (timestamp) => {
@@ -28,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sunsetElement.textContent = formatTime(sunsetTimestamp);
         }
     }
+    
 
     // Geolocation search
     const geolocateBtn = document.getElementById('geolocate-btn');
@@ -78,5 +77,87 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('query').value = query;
             document.getElementById('search-form').submit();
         });
-    });
+    });  
+
+    // City suggestions functionality
+    const searchInput = document.getElementById('query');
+    const searchForm = document.getElementById('search-form');
+
+    if (searchInput) {
+        // Create suggestions dropdown
+        const suggestionsContainer = document.createElement('div');
+        suggestionsContainer.className = 'absolute z-10 bg-white border border-gray-300 rounded-md shadow-lg w-full hidden';
+        suggestionsContainer.id = 'suggestions-container';
+        searchInput.parentNode.style.position = 'relative';
+        searchInput.parentNode.appendChild(suggestionsContainer);
+        
+        // Add event listeners for search input
+        searchInput.addEventListener('input', debounce(function() {
+            const query = searchInput.value.trim();
+            
+            if (query.length < 2) {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.classList.add('hidden');
+                return;
+            }
+            
+            // Fetch suggestions
+            fetch(`/api/suggestions/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.suggestions.length === 0) {
+                        suggestionsContainer.classList.add('hidden');
+                        return;
+                    }
+                    
+                    // Render suggestions
+                    let html = '';
+                    data.suggestions.forEach(suggestion => {
+                        html += `
+                            <div class="suggestion-item p-3 hover:bg-gray-100 cursor-pointer">
+                                <i class="fas fa-city mr-2 text-weather-primary"></i>
+                                ${suggestion}
+                            </div>
+                        `;
+                    });
+                    
+                    suggestionsContainer.innerHTML = html;
+                    suggestionsContainer.classList.remove('hidden');
+                    
+                    // Add click event to suggestions
+                    const suggestionItems = document.querySelectorAll('.suggestion-item');
+                    suggestionItems.forEach(item => {
+                        item.addEventListener('click', function() {
+                            searchInput.value = this.textContent.trim();
+                            suggestionsContainer.classList.add('hidden');
+                            searchForm.submit();
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    suggestionsContainer.classList.add('hidden');
+                });
+        }, 300));
+        
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.classList.add('hidden');
+            }
+        });
+        
+        // Debounce function to limit API calls
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+    }
 });

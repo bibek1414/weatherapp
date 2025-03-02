@@ -4,72 +4,78 @@
 
 {% block content %}
 {% if weather %}
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl animate__animated animate__fadeIn">
     <!-- Header with city info -->
-    <div class="bg-gradient-to-r from-weather-primary to-weather-secondary text-white p-8">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold mb-2">{{ weather.city }}, {{ weather.country }}</h1>
-                <p class="text-lg opacity-90">
-                    <i class="fas fa-map-marker-alt mr-2"></i>
+    <div class="weather-gradient text-white p-8 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full bg-blue-500 opacity-20">
+            <div class="clouds"></div>
+        </div>
+        <div class="flex flex-col md:flex-row justify-between items-center relative z-10">
+            <div class="animate__animated animate__fadeInLeft">
+                <h1 class="text-4xl font-bold mb-2">{{ weather.city }}, {{ weather.country }}</h1>
+                <p class="text-lg opacity-90 flex items-center">
+                    <i class="fas fa-map-marker-alt mr-2 animate__animated animate__bounce animate__infinite animate__slow"></i>
                     Lat: {{ weather.coordinates.lat }}, Lon: {{ weather.coordinates.lon }}
                 </p>
             </div>
-            <div class="text-center">
+            <div class="text-center mt-4 md:mt-0 animate__animated animate__fadeInRight">
                 <img 
-                    src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" 
+                    src="http://openweathermap.org/img/wn/{{ weather.icon }}@4x.png" 
                     alt="{{ weather.description }}" 
-                    class="w-24 h-24 mx-auto"
+                    class="w-32 h-32 mx-auto drop-shadow-lg filter"
                 >
-                <p class="text-xl">{{ weather.description }}</p>
+                <p class="text-xl capitalize font-light">{{ weather.description }}</p>
             </div>
         </div>
     </div>
     
     <!-- Current Temperature -->
-    <div class="p-8 border-b">
+    <div class="p-8 border-b animate__animated animate__fadeIn animate__delay-1s">
         <div class="flex flex-col md:flex-row justify-between items-center">
             <button 
-    id="show-forecast-btn"
-    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition duration-200 flex items-center"
-    data-lat="{{ weather.coordinates.lat }}"
-    data-lon="{{ weather.coordinates.lon }}"
->
-    <i class="fas fa-calendar-alt mr-2"></i>
-    5-Day Forecast
-</button>
-            <div class="text-center md:text-left mb-4 md:mb-0">
-                <span class="text-7xl font-bold text-gray-800">{{ weather.temperature }}°C</span>
-                <p class="text-gray-600 mt-2">Feels like: {{ weather.feels_like }}°C</p>
+                id="show-forecast-btn"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition-all duration-300 flex items-center shadow-md hover:shadow-lg transform hover:-translate-y-1"
+                data-lat="{{ weather.coordinates.lat }}"
+                data-lon="{{ weather.coordinates.lon }}"
+            >
+                <i class="fas fa-calendar-alt mr-2"></i>
+                5-Day Forecast
+            </button>
+            <div class="text-center md:text-left my-6 md:my-0">
+                <span class="text-8xl font-bold text-gray-800 flex justify-center items-center">
+                    {{ weather.temperature }}
+                    <span class="text-5xl ml-1">°C</span>
+                </span>
+                <p class="text-gray-600 mt-2 text-lg">Feels like: {{ weather.feels_like }}°C</p>
             </div>
             
-            <div class="grid grid-cols-2 gap-x-12 gap-y-4">
-                <div class="flex items-center">
-                    <i class="fas fa-tint text-blue-500 text-xl mr-3"></i>
+            <div class="grid grid-cols-2 gap-x-12 gap-y-6">
+                <div class="flex items-center card-hover p-3 rounded-lg">
+                    <i class="fas fa-tint text-blue-500 text-2xl mr-4"></i>
                     <div>
                         <p class="text-sm text-gray-500">Humidity</p>
-                        <p class="text-xl">{{ weather.humidity }}%</p>
+                        <p class="text-2xl font-semibold">{{ weather.humidity }}%</p>
                     </div>
                 </div>
-                <div class="flex items-center">
-                    <i class="fas fa-wind text-teal-500 text-xl mr-3"></i>
+                <div class="flex items-center card-hover p-3 rounded-lg">
+                    <i class="fas fa-wind text-teal-500 text-2xl mr-4"></i>
                     <div>
                         <p class="text-sm text-gray-500">Wind Speed</p>
-                        <p class="text-xl">{{ weather.wind_speed }} m/s</p>
+                        <p class="text-2xl font-semibold">{{ weather.wind_speed }} m/s</p>
                     </div>
                 </div>
-                <div class="flex items-center">
-                    <i class="fas fa-compress-alt text-purple-500 text-xl mr-3"></i>
+                <div class="flex items-center card-hover p-3 rounded-lg">
+                    <i class="fas fa-compress-alt text-purple-500 text-2xl mr-4"></i>
                     <div>
                         <p class="text-sm text-gray-500">Pressure</p>
-                        <p class="text-xl">{{ weather.pressure }} hPa</p>
+                        <p class="text-2xl font-semibold">{{ weather.pressure }} hPa</p>
                     </div>
                 </div>
-                <div class="flex items-center">
-                    <i class="fas fa-sun text-yellow-500 text-xl mr-3"></i>
+                <div class="flex items-center card-hover p-3 rounded-lg">
+                    <i class="fas fa-sun text-yellow-500 text-2xl mr-4 animate__animated animate__pulse animate__infinite animate__slow"></i>
                     <div>
                         <p class="text-sm text-gray-500">UV Index</p>
-                        <p class="text-xl">{{ weather.uv_index|default:"N/A" }}</p>
+                        <p class="text-2xl font-semibold">{{ weather.uv_index|default:"N/A" }}</p>
                     </div>
                 </div>
             </div>
@@ -77,20 +83,20 @@
     </div>
     
     <!-- Search Again -->
-    <div class="p-8">
+    <div class="p-8 animate__animated animate__fadeIn animate__delay-2s">
         <form action="{% url 'search_weather' %}" method="post" class="space-y-4">
             {% csrf_token %}
-            <h3 class="text-xl font-semibold mb-2">Search Another Location</h3>
+            <h3 class="text-xl font-semibold mb-4 text-weather-primary">Search Another Location</h3>
             <div class="flex">
                 <input 
                     type="text" 
                     id="query" 
                     name="query" 
                     value="{{ query }}"
-                    class="flex-grow px-4 py-3 rounded-l-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-weather-primary"
+                    class="flex-grow px-4 py-3 rounded-l-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-weather-primary transition-all duration-300"
                     required
                 >
-                <button type="submit" class="bg-weather-primary hover:bg-weather-secondary text-white px-6 py-3 rounded-r-md transition duration-200">
+                <button type="submit" class="bg-weather-primary hover:bg-weather-secondary text-white px-6 py-3 rounded-r-md transition-all duration-300 shadow-md hover:shadow-lg">
                     <i class="fas fa-search mr-2"></i>
                     Search
                 </button>
@@ -98,8 +104,67 @@
         </form>
     </div>
 </div>
+
+<!-- Forecast Modal -->
+<div id="forecast-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden animate__animated animate__fadeIn">
+    <div class="bg-white rounded-lg shadow-2xl w-11/12 md:w-4/5 max-w-6xl max-h-[90vh] overflow-y-auto animate__animated animate__zoomIn">
+        <div class="p-6 border-b bg-gray-50">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-weather-primary">5-Day Weather Forecast for {{ weather.city }}</h2>
+                <button id="close-forecast-modal" class="text-gray-500 hover:text-gray-700 transition-colors duration-300 p-2 rounded-full hover:bg-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="forecast-content" class="p-6">
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-t-4 border-weather-primary"></div>
+                <p class="text-center mt-6 text-gray-600 text-lg">Loading forecast data...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weather animation styles -->
+<style>
+    .clouds {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+        transform: translateZ(0);
+    }
+    
+    .clouds:before,
+    .clouds:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent url('https://assets.codepen.io/3364143/cloud1.png') repeat 0 0;
+        background-size: auto 100%;
+        animation: cloudAnimation 60s linear infinite;
+        opacity: 0.1;
+    }
+    
+    .clouds:after {
+        background-image: url('https://assets.codepen.io/3364143/cloud2.png');
+        animation-duration: 120s;
+        animation-delay: -20s;
+    }
+    
+    @keyframes cloudAnimation {
+        0% { background-position: 0 0; }
+        100% { background-position: 1000px 0; }
+    }
+</style>
 {% endif %}
 {% endblock %}
+
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -113,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show forecast modal and fetch data
         showForecastBtn.addEventListener('click', function() {
             forecastModal.classList.remove('hidden');
+            forecastModal.classList.add('animate__fadeIn');
             
             const lat = this.dataset.lat;
             const lon = this.dataset.lon;
@@ -122,28 +188,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        forecastContent.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+                        forecastContent.innerHTML = `<p class="text-red-500 text-center p-6">${data.error}</p>`;
                         return;
                     }
                     
                     // Render forecast data
-                    let html = '<div class="grid grid-cols-1 md:grid-cols-5 gap-4">';
+                    let html = '<div class="grid grid-cols-1 md:grid-cols-5 gap-6">';
                     
-                    data.forecast.forEach(day => {
+                    data.forecast.forEach((day, index) => {
+                        const delayClass = `animate__animated animate__fadeInUp animate__delay-${index}s`;
                         html += `
-                            <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <h4 class="font-bold text-lg">${day.day_name}</h4>
-                                <p class="text-sm text-gray-600">${day.date}</p>
+                            <div class="bg-gray-50 p-6 rounded-lg text-center shadow-md transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${delayClass}">
+                                <h4 class="font-bold text-xl text-weather-primary">${day.day_name}</h4>
+                                <p class="text-sm text-gray-600 mb-3">${day.date}</p>
                                 <img 
                                     src="http://openweathermap.org/img/wn/${day.icon}@2x.png" 
                                     alt="${day.description}" 
-                                    class="w-16 h-16 mx-auto"
+                                    class="w-20 h-20 mx-auto drop-shadow filter"
                                 >
-                                <p class="font-bold text-2xl">${day.temp}°C</p>
-                                <p class="capitalize">${day.description}</p>
-                                <div class="mt-2 flex justify-around text-sm">
-                                    <span><i class="fas fa-tint text-blue-500"></i> ${day.humidity}%</span>
-                                    <span><i class="fas fa-wind text-teal-500"></i> ${day.wind_speed} m/s</span>
+                                <p class="font-bold text-3xl my-2">${day.temp}°C</p>
+                                <p class="capitalize text-gray-700">${day.description}</p>
+                                <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
+                                    <div class="bg-blue-50 p-2 rounded">
+                                        <i class="fas fa-tint text-blue-500"></i>
+                                        <span class="font-medium">${day.humidity}%</span>
+                                    </div>
+                                    <div class="bg-teal-50 p-2 rounded">
+                                        <i class="fas fa-wind text-teal-500"></i>
+                                        <span class="font-medium">${day.wind_speed} m/s</span>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -153,19 +226,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     forecastContent.innerHTML = html;
                 })
                 .catch(error => {
-                    forecastContent.innerHTML = `<p class="text-red-500">Error loading forecast: ${error.message}</p>`;
+                    forecastContent.innerHTML = `<p class="text-red-500 text-center p-6">Error loading forecast: ${error.message}</p>`;
                 });
         });
         
         // Close forecast modal
         closeForecastModal.addEventListener('click', function() {
-            forecastModal.classList.add('hidden');
+            forecastModal.classList.add('animate__fadeOut');
+            setTimeout(() => {
+                forecastModal.classList.add('hidden');
+                forecastModal.classList.remove('animate__fadeOut');
+            }, 500);
         });
         
         // Close modal when clicking outside
         forecastModal.addEventListener('click', function(e) {
             if (e.target === forecastModal) {
-                forecastModal.classList.add('hidden');
+                forecastModal.classList.add('animate__fadeOut');
+                setTimeout(() => {
+                    forecastModal.classList.add('hidden');
+                    forecastModal.classList.remove('animate__fadeOut');
+                }, 500);
             }
         });
     }

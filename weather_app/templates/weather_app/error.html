@@ -3,18 +3,20 @@
 {% block title %}Error - Weather App{% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-md">
+<div class="bg-white p-8 rounded-lg shadow-md transform transition-all duration-300 hover:shadow-xl animate__animated animate__fadeIn">
     <div class="text-center">
-        <i class="fas fa-exclamation-triangle text-yellow-500 text-5xl mb-4"></i>
-        <h1 class="text-3xl font-bold mb-2 text-gray-800">Oops! Something went wrong</h1>
-        <p class="text-gray-600 mb-6">We encountered an error while processing your request.</p>
+        <div class="mb-6 animate__animated animate__wobble animate__slower animate__infinite">
+            <i class="fas fa-exclamation-triangle text-yellow-500 text-6xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold mb-4 text-gray-800 animate__animated animate__fadeIn animate__delay-1s">Oops! Something went wrong</h1>
+        <p class="text-gray-600 mb-6 animate__animated animate__fadeIn animate__delay-1s">We encountered an error while processing your request.</p>
         
-        <div class="bg-gray-100 p-4 rounded-lg text-left mb-6">
-            <p class="font-semibold">Error Type: {{ error_type }}</p>
-            <p class="text-red-600">{{ error_message }}</p>
+        <div class="bg-gray-50 p-6 rounded-lg text-left mb-6 border border-gray-200 animate__animated animate__fadeIn animate__delay-2s">
+            <p class="font-semibold text-lg mb-2">Error Type: {{ error_type }}</p>
+            <p class="text-red-600 font-medium">{{ error_message }}</p>
         </div>
         
-        <a href="{% url 'index' %}" class="bg-weather-primary hover:bg-weather-secondary text-white px-6 py-3 rounded-md transition duration-200 inline-block">
+        <a href="{% url 'index' %}" class="bg-weather-primary hover:bg-weather-secondary text-white px-6 py-3 rounded-md transition-all duration-300 inline-block shadow-md hover:shadow-lg scale-hover animate__animated animate__fadeIn animate__delay-3s">
             <i class="fas fa-home mr-2"></i>
             Back to Home
         </a>

@@ -5,7 +5,6 @@ from datetime import datetime
 
 # Load environment variables
 load_dotenv()
-
 class WeatherService:
     def __init__(self):
         self.api_key = os.getenv('WEATHER_API_KEY')
@@ -38,6 +37,7 @@ class WeatherService:
             'appid': self.api_key,
             'units': 'metric'
         }
+
         return self._make_api_request(self.weather_url, params)
     
     def get_forecast(self, lat, lon, days=5):
@@ -115,3 +115,4 @@ class WeatherService:
         except requests.exceptions.RequestException as e:
             print(f"Error fetching weather data: {e}")
             return None
+

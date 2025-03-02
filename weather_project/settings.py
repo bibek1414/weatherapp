@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'weather_app',
     'tailwind',
     'theme',
+    'django_browser_reload',
 ]
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'weather_app.middleware.WeatherErrorMiddleware',
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = 'weather_project.urls'
